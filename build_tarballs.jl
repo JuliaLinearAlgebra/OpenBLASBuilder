@@ -1,66 +1,38 @@
 using BinaryBuilder
-using SHA
 
-# Define what we're downloading, where we're putting it
-src_name = "OpenBLAS"
-src_vers = "0.2.20"
-src_url = "https://github.com/xianyi/OpenBLAS/archive/v$(src_vers).tar.gz"
-src_hash = "5ef38b15d9c652985774869efd548b8e3e972e1e99475c673b25537ed7bcf394"
+sources = [
+    "https://github.com/xianyi/OpenBLAS/archive/v0.2.20.tar.gz" =>
+    "5ef38b15d9c652985774869efd548b8e3e972e1e99475c673b25537ed7bcf394",
+]
 
-# First, download the source, store it in ./downloads/
-src_path = joinpath(pwd(), "downloads", basename(src_url))
-try mkpath(dirname(src_path)) end
-download_verify(src_url, src_hash, src_path; verbose=true)
+common_flags = "USE_THREAD=1 GEMM_MULTITHREADING_THRESHOLD=50 NO_AFFINITY=1 CROSS=1 HOSTCC=\$CC_FOR_BUILD PREFIX=/"
+ilp64_flags  = "INTERFACE64=1 SYMBOLSUFFIX=64_ LIBPREFIX=libopenblas64_"
+platform_data = Dict(
+    Linux(:x86_64)   => ("DYNAMIC_ARCH=1 BINARY=64 NUM_THREADS=16 $(ilp64_flags)", "libopenblas64_p-r0"),
+    Linux(:i686)     => ("DYNAMIC_ARCH=1 BINARY=32 NUM_THREADS=8", "libopenblasp-r0"),
+    Linux(:aarch64)  => ("TARGET=ARMV8 BINARY=64 NUM_THREADS=16 $(ilp64_flags)", "libopenblas64_p-r0"),
+    Linux(:armv7l)   => ("TARGET=ARMV7 BINARY=32 NUM_THREADS=16", "libopenblasp-r0"),
+    Linux(:ppc64le)  => ("TARGET=POWER8 BINARY=64 NUM_THREADS=16 $(ilp64_flags)", "libopenblas64_p-r0"),
+    MacOS()          => ("DYNAMIC_ARCH=1 BINARY=64 NUM_THREADS=16 $(ilp64_flags)", "libopenblas64_p-r0"),
+    Windows(:x86_64) => ("DYNAMIC_ARCH=1 BINARY=64 NUM_THREADS=16 $(ilp64_flags)", "libopenblas64_p-r0"),
+    Windows(:i686)   => ("DYNAMIC_ARCH=1 BINARY=32 NUM_THREADS=8", "libopenblasp-r0"),
+)
 
-# Our build products will go into ./products
-out_path = joinpath(pwd(), "products")
-rm(out_path; force=true, recursive=true)
-mkpath(out_path)
+for platform in keys(platform_data)
+    platform_flags, libname = platform_data[platform]
 
-# Build for all our platforms
-products = Dict()
-for platform in supported_platforms()
-    target = platform_triplet(platform)
+    flags = "$(common_flags) $(platform_flags) CROSS_SUFFIX=$(triplet(platform))-"
+    script = """
+    cd \${WORKSPACE}/srcdir
+    cd OpenBLAS-0.2.20/
+    make $(flags) -j\${nproc}
+    make $(flags) install
+    """
 
-    # We build in a platform-specific directory
-    build_path = joinpath(pwd(), "build", target)
-    try mkpath(build_path) end
+    products = prefix -> [
+        LibraryProduct(prefix, libname)
+    ]
 
-    cd(build_path) do
-        # For each build, create a temporary prefix we'll install into, then package up
-        temp_prefix() do prefix
-            # Unpack the source into our build directory
-            unpack(src_path, build_path; verbose=true)
-
-            # Enter the directory we just unpacked
-            cd("$(src_name)-$(src_vers)") do
-                # We expect these outputs from our build steps
-                libnettle = LibraryProduct(prefix, "libnettle")
-                nettlehash = ExecutableProduct(prefix, "nettle-hash")
-
-                # We build using `make`
-                steps = [
-                    `make clean`,
-                    `make -j$(min(Sys.CPU_CORES + 1,8))`,
-                    `make install`
-                ]
-                dep = Dependency(src_name, [libnettle, nettlehash], steps, platform, prefix)
-                build(dep; verbose=true)
-            end
-
-            # Once we're built up, go ahead and package this prefix out
-            tarball_path, tarball_hash = package(prefix, joinpath(out_path, src_name); platform=platform, verbose=true)
-            products[target] = (basename(tarball_path), tarball_hash)
-        end
-    end
-    
-    # Finally, destroy the build_path
-    rm(build_path; recursive=true)
+    autobuild(pwd(), "OpenBLASBuilder", [platform], sources, script, products)
 end
 
-# In the end, dump an informative message telling the user how to download/install these
-info("Hash/filename pairings:")
-for target in keys(products)
-    filename, hash = products[target]
-    println("    :$(platform_key(target)) => (\"\$bin_prefix/$(filename)\", \"$(hash)\"),")
-end

@@ -7,18 +7,17 @@ notifications:
   email: false
 git:
   depth: 99999999
-sudo: required
-services:
-  - docker
-
+cache:
+  directories:
+    - downloads
 env:
-  DOCKER_IMAGE: staticfloat/julia_crossbuild:x64
+  global:
+    - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+sudo: required
 
 # Before anything else, get the latest versions of things
 before_script:
-  - docker pull $DOCKER_IMAGE
   - julia -e 'Pkg.clone("https://github.com/JuliaPackaging/BinaryProvider.jl")'
-  - julia -e 'Pkg.clone("https://github.com/staticfloat/ObjectFile.jl")'
   - julia -e 'Pkg.clone("https://github.com/JuliaPackaging/BinaryBuilder.jl"); Pkg.build()'
 
 script:
@@ -27,12 +26,10 @@ script:
 deploy:
   provider: releases
   api_key:
-    # Note; this api_key is only valid for staticfloat/NettleBuilder; you need
+    # Note; this api_key is only valid for staticfloat/OpenBLASBuilder; you need
     # to make your own: https://docs.travis-ci.com/user/deployment/releases/
-    secure: RHZ+Z31EQiYLtRvRKWV4VNlDXJH87xq/0Ldw4xf/d7oeNun0qow+7g0A2WwgYeoOb7GbPY6C4gzvu1tEUY8Nt1U+cWcmHRElMEdUwyALOcK1YAs0MLnShqJzKfll+ZIaxwoXsaI8SAV68vcqivBlip3V5UH1a0JxZTRnxEsO1g13lVIIEGBFLh/5QWMz7FK3qq67tP1M7Nr12AEHnfSieIUJu1U9Lmx1OIppmIvZaeWBZkD4PswsVLZkCTnzqq8cbPCRtd76X59Eav/EAnNAJRwki7XPBBEXoEPBmPs9pNgKEqAXq3C08Q7Z0yeCk1JgdUGZm4j6XTbsA36yXmp3ImBtCa/kDjDuPX+H589gjbFdD5BvgnGDvoMNh9xkI8UzjDcd2QTAfenOCS4a1GUpHEo7x1a61EnLTuQ6yzucVP8DPfcFgVAkQtL+1LG0rZ7F/4DKAXqRN5O1v+WU5OnIFB1CmANmDnncPyMxjUdNyLzu0XYmpL5f7s1Fqe50E+Z3fF45jslPP8E8W27zp/TvI8bnx3Rrh8MsoTkOq1qoYMRYV/mnYgj7oge9eSPfnDyJKIhuN2+zAKb9sjbpeea+tbCg5fuS+ZYi0Ak1CqR0xKjOC3kbCQ88pLcJ5plN0M+8/su2weIbfhGE0JfiPNRTY9bMuv000A2eF6Evlm4vPFQ=
-  file_glob: true
   file: products/*.tar.gz
   skip_cleanup: true
   on:
-    repo: staticfloat/NettleBuilder
+    repo: staticfloat/OpenBLASBuilder
     tags: true
