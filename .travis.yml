@@ -28,6 +28,7 @@ deploy:
   api_key:
     # Note; this api_key is only valid for staticfloat/OpenBLASBuilder; you need
     # to make your own: https://docs.travis-ci.com/user/deployment/releases/
+    secure: JMB4VWK1dp8PN07GCD2sIlrrbO4f4JtLIhu4x0eVnVhMc369M2BLfItNS3f40jabQjxtu2iqiiQwfUZ6LBy48xj1wdKc+EkXOOoYq1BKzemvjVqXIBS8/kF/Zot2eEYtCmrjg9Z4E0L8VdKmrV9j5BaJI9JaBQv2gLi02Q/KMItUDpinv5Tq0JfRG76ZoXs/F/8csecTUKxCOJM70KQXlR7dLDtAMkpH6Ul8oSc97G1vFCmH03UqTJJOVNfKnbx9dSDq+v98ZltRSu9fa0okbRqowS5MzyyPhNnMVjzuvhLVHV2+Bkocgfd2exVPnRTVohKV5o4+escMI5RPA5qZVnIOhbfRHCfR7OujTAlHZyr+aayR9ogDVyPQjNqCP9rWMvBxIa2oPSkAErpYIdseL6IBevB1bDsjfUCSNUzEvwmazBbQAb6LGOyHB1wcm9zePVSw+t4Mcx/fSo/CnIws7bHyuVxG1teUHxRSXETf/adhE9+XUlDC5zBlE3rI06Z3iOuw2IXvfHoDjqX3NyqYC4L0NaKtX8uYg3M3F6ley60+IGgTkUnmhW7NzPbNcMpnARu/skYA8PZwMfHIne9TZdOOcHH0qgpEE9070ww7/Bqx6u0MGBfOMC79F0nYHmQlnQsi+/PFVOAPvoE1zt5AhnmQPnWI/6wy7E8KgDZWi0Y=
   file: products/*.tar.gz
   skip_cleanup: true
   on:
