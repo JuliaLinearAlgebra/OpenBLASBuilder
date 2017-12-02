@@ -42,7 +42,7 @@ if length(ARGS) > 0
     build_platforms = platform_key.(split(ARGS[1], ","))
 end
 
-println("Building for $(triplet.(build_platforms))")
+info("Building for $(join(triplet.(build_platforms), ", "))")
 for platform in build_platforms
     platform_flags, libname = platform_data[platform]
 
@@ -57,6 +57,7 @@ for platform in build_platforms
         LibraryProduct(prefix, libname)
     ]
 
-    autobuild(pwd(), "OpenBLASBuilder", [platform], sources, script, products)
+    info("Beginning $(triplet(platform)) build...")
+    autobuild(pwd(), "OpenBLASBuilder", [platform], sources, script, products; verbose=false)
 end
 
