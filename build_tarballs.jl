@@ -35,7 +35,15 @@ platform_data = Dict(k => (v[1] * " CROSS_SUFFIX=$(triplet(k))- ", v[2]) for (k,
 # Add common_flags to each platform
 platform_data = Dict(k => (v[1] * common_flags, v[2]) for (k, v) in platform_data)
 
-for platform in keys(platform_data)
+# Choose which platforms to build for; if we've got an argument use that one,
+# otherwise default ot just building all of them!
+build_platforms = keys(platform_data)
+if length(ARGS) > 0
+    build_platforms = platform_key.(split(ARGS[1], ","))
+end
+
+println("Building for $(triplet.(build_platforms))")
+for platform in build_platforms
     platform_flags, libname = platform_data[platform]
 
     # Construct our script

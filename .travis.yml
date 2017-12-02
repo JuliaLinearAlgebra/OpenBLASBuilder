@@ -13,6 +13,16 @@ cache:
 env:
   global:
     - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+  # Our build takes so long, we split the targets across multiple runs in our matrix
+  matrix:
+    - TARGET=x86_64-linux-gnu
+    - TARGET=i686-linux-gnu
+    - TARGET=aarch64-linux-gnu
+    - TARGET=arm-linux-gnueabihf
+    - TARGET=powerpc64le-linux-gnu
+    - TARGET=x86_64-apple-darwin14
+    - TARGET=x86_64-w64-mingw32
+    - TARGET=i686-w64-mingw32
 sudo: required
 
 # Before anything else, get the latest versions of things
@@ -21,7 +31,7 @@ before_script:
   - julia -e 'Pkg.clone("https://github.com/JuliaPackaging/BinaryBuilder.jl"); Pkg.build()'
 
 script:
-  - julia build_tarballs.jl
+  - julia --color=yes build_tarballs.jl $TARGET
 
 deploy:
   provider: releases
