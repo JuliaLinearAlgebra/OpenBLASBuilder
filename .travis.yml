@@ -13,6 +13,7 @@ cache:
 env:
   global:
     - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+    - BINARYBUILDER_AUTOMATIC_APPLE=true
   # Our build takes so long, we split the targets across multiple runs in our matrix
   matrix:
     - TARGET=x86_64-linux-gnu
