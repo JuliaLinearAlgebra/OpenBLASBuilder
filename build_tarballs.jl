@@ -16,11 +16,18 @@ flags="${flags} CROSS=1 HOSTCC=$CC_FOR_BUILD PREFIX=/ CROSS_SUFFIX=${target}-"
 flags="${flags} OBJCONV=objconv"
 
 if [[ ${target} == *64-*-* ]]; then
-    # If we're building for a 64-bit platform, set BINARY=64 and engage ILP64:
-    flags="${flags} BINARY=64 INTERFACE64=1 SYMBOLSUFFIX=64_ LIBPREFIX=libopenblas64_"
-else
-    # Otherwise, set BINARY=32
+    # If we're building for a 64-bit platform, engage ILP64
+    flags="${flags} INTERFACE64=1 SYMBOLSUFFIX=64_ LIBPREFIX=libopenblas64_"
+fi
+
+# Set BINARY=32 on i686 platforms and armv7l
+if [[ ${target} == i686* ]] || [[ ${target} == arm-* ]]; then
     flags="${flags} BINARY=32"
+fi
+
+# Set BINARY=64 on x86_64 platforms
+if [[ ${target} == x86_64-* ]]; then
+    flags="${flags} BINARY=64"
 fi
 
 # Use 16 threads unless we're on an i686 arch:
