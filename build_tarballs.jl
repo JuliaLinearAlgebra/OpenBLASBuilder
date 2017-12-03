@@ -5,59 +5,68 @@ sources = [
     "5ef38b15d9c652985774869efd548b8e3e972e1e99475c673b25537ed7bcf394",
 ]
 
+script = raw"""
 # We always want threading
-common_flags  = "USE_THREAD=1 GEMM_MULTITHREADING_THRESHOLD=50 NO_AFFINITY=1 "
+flags="USE_THREAD=1 GEMM_MULTITHREADING_THRESHOLD=50 NO_AFFINITY=1"
 
 # We are cross-compiling
-common_flags *= "CROSS=1 HOSTCC=\$CC_FOR_BUILD PREFIX=/ "
+flags="${flags} CROSS=1 HOSTCC=$CC_FOR_BUILD PREFIX=/ CROSS_SUFFIX=${target}-"
 
 # We need to use our basic objconv, not a prefixed one:
-common_flags *= "OBJCONV=objconv "
+flags="${flags} OBJCONV=objconv"
 
-# These flags are for if we are building with ILP64 support
-ilp64_flags  = "BINARY=64 INTERFACE64=1 SYMBOLSUFFIX=64_ LIBPREFIX=libopenblas64_"
+if [[ ${target} == *64-*-* ]]; then
+    # If we're building for a 64-bit platform, set BINARY=64 and engage ILP64:
+    flags="${flags} BINARY=64 INTERFACE64=1 SYMBOLSUFFIX=64_ LIBPREFIX=libopenblas64_"
+else
+    # Otherwise, set BINARY=32
+    flags="${flags} BINARY=32"
+fi
 
-# From these flags, define the complete flags we'll apply to each platform
-platform_data = Dict(
-    Linux(:x86_64)   => ("DYNAMIC_ARCH=1 NUM_THREADS=16 $(ilp64_flags)", "libopenblas64_p-r0"),
-    Linux(:i686)     => ("DYNAMIC_ARCH=1 BINARY=32 NUM_THREADS=8", "libopenblasp-r0"),
-    Linux(:aarch64)  => ("TARGET=ARMV8 NUM_THREADS=16 $(ilp64_flags)", "libopenblas64_p-r0"),
-    Linux(:armv7l)   => ("TARGET=ARMV7 BINARY=32 NUM_THREADS=16", "libopenblasp-r0"),
-    Linux(:ppc64le)  => ("TARGET=POWER8 NUM_THREADS=16 $(ilp64_flags)", "libopenblas64_p-r0"),
-    MacOS()          => ("DYNAMIC_ARCH=1 NUM_THREADS=16 $(ilp64_flags) AR=x86_64-apple-darwin14-ar", "libopenblas64_p-r0"),
-    Windows(:x86_64) => ("DYNAMIC_ARCH=1 NUM_THREADS=16 $(ilp64_flags)", "libopenblas64_p-r0"),
-    Windows(:i686)   => ("DYNAMIC_ARCH=1 BINARY=32 NUM_THREADS=8", "libopenblasp-r0"),
-)
+# Use 16 threads unless we're on an i686 arch:
+if [[ ${target} == i686* ]]; then
+    flags="${flags} NUM_THREADS=8"
+else
+    flags="${flags} NUM_THREADS=16"
+fi
 
-# Add CROSS_SUFFIX to each platform
-platform_data = Dict(k => (v[1] * " CROSS_SUFFIX=$(triplet(k))- ", v[2]) for (k, v) in platform_data)
+# On i686 and x86_64 architectures, engage DYNAMIC_ARCH
+if [[ ${target} == i686* ]] || [[ ${target} == x86_64* ]]; then
+    flags="${flags} DYNAMIC_ARCH=1"
+# Otherwise, engage a specific target
+elif [[ ${target} == aarch64-* ]]; then
+    flags="${flags} TARGET=ARMV8"
+elif [[ ${target} == arm-* ]]; then
+    flags="${flags} TARGET=ARMV7"
+elif [[ ${target} == ppc64le-* ]]; then
+    flags="${flags} TARGET=POWER8"
+fi
 
-# Add common_flags to each platform
-platform_data = Dict(k => (v[1] * common_flags, v[2]) for (k, v) in platform_data)
+# Enter the fun zone
+cd ${WORKSPACE}/srcdir/OpenBLAS-0.2.20/
+
+# Build the library
+make ${flags} -j${nproc}
+
+# Install the library
+make ${flags} install
+"""
+
+
+# Be quiet unless we've passed `--verbose`
+verbose = "--verbose" in ARGS
+ARGS = filter!(x -> x != "--verbose", ARGS)
 
 # Choose which platforms to build for; if we've got an argument use that one,
-# otherwise default ot just building all of them!
-build_platforms = keys(platform_data)
+# otherwise default to just building all of them!
+build_platforms = supported_platforms()
 if length(ARGS) > 0
     build_platforms = platform_key.(split(ARGS[1], ","))
 end
-
 info("Building for $(join(triplet.(build_platforms), ", "))")
-for platform in build_platforms
-    platform_flags, libname = platform_data[platform]
 
-    # Construct our script
-    script = """
-    cd \${WORKSPACE}/srcdir/OpenBLAS-0.2.20/
-    make $(platform_flags) -j\${nproc}
-    make $(platform_flags) install
-    """
+products = prefix -> [
+    LibraryProduct(prefix, ["libopenblasp-r0", "libopenblas64_p-r0"])
+]
 
-    products = prefix -> [
-        LibraryProduct(prefix, libname)
-    ]
-
-    info("Beginning $(triplet(platform)) build...")
-    autobuild(pwd(), "OpenBLASBuilder", [platform], sources, script, products; verbose=false)
-end
-
+autobuild(pwd(), "OpenBLASBuilder", build_platforms, sources, script, products; verbose=verbose)
