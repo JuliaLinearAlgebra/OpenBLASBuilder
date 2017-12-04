@@ -45,7 +45,7 @@ elif [[ ${target} == aarch64-* ]]; then
     flags="${flags} TARGET=ARMV8"
 elif [[ ${target} == arm-* ]]; then
     flags="${flags} TARGET=ARMV7"
-elif [[ ${target} == ppc64le-* ]]; then
+elif [[ ${target} == powerpc64le-* ]]; then
     flags="${flags} TARGET=POWER8"
 fi
 
