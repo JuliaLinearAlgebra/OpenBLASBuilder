@@ -1,5 +1,16 @@
 using BinaryBuilder
 
+platforms = [
+    BinaryProvider.Windows(:i686),
+    BinaryProvider.Windows(:x86_64),
+    BinaryProvider.Linux(:i686, :glibc),
+    BinaryProvider.Linux(:x86_64, :glibc),
+    BinaryProvider.Linux(:aarch64, :glibc),
+    BinaryProvider.Linux(:armv7l, :glibc),
+    BinaryProvider.Linux(:powerpc64le, :glibc),
+    BinaryProvider.MacOS()
+]
+
 sources = [
     "https://github.com/xianyi/OpenBLAS/archive/v0.2.20.tar.gz" =>
     "5ef38b15d9c652985774869efd548b8e3e972e1e99475c673b25537ed7bcf394",
@@ -66,7 +77,7 @@ ARGS = filter!(x -> x != "--verbose", ARGS)
 
 # Choose which platforms to build for; if we've got an argument use that one,
 # otherwise default to just building all of them!
-build_platforms = supported_platforms()
+build_platforms = platforms
 if length(ARGS) > 0
     build_platforms = platform_key.(split(ARGS[1], ","))
 end
