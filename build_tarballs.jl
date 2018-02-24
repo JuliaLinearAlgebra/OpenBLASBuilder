@@ -106,7 +106,7 @@ if !only_buildjl
     info("Building for $(join(triplet.(platforms), ", "))")
 
     # Build the given platforms using the given sources
-    autobuild(pwd(), "OpenBLAS", platforms, sources, script, products, dependencies=dependencies)
+    autobuild(pwd(), "OpenBLAS", platforms, sources, script, products; dependencies=dependencies, verbose=verbose)
 else
     # If we're only reconstructing a build.jl file on Travis, grab the information and do it
     if !haskey(ENV, "TRAVIS_REPO_SLUG") || !haskey(ENV, "TRAVIS_TAG")
