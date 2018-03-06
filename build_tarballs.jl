@@ -17,17 +17,17 @@ flags="${flags} CROSS=1 HOSTCC=$CC_FOR_BUILD PREFIX=/ CROSS_SUFFIX=${target}-"
 # We need to use our basic objconv, not a prefixed one:
 flags="${flags} OBJCONV=objconv"
 
-if [[ ${target} == *64-*-* ]]; then
+if [[ ${nbits} == 64 ]]; then
     # If we're building for a 64-bit platform, engage ILP64
     flags="${flags} INTERFACE64=1 SYMBOLSUFFIX=64_ LIBPREFIX=libopenblas64_"
 fi
 
-# Set BINARY=32 on i686 platforms and armv7l
-if [[ ${target} == i686* ]] || [[ ${target} == arm-* ]]; then
+# Set BINARY=32 on 32-bit platforms
+if [[ ${nbits} == 32 ]]; then
     flags="${flags} BINARY=32"
 fi
 
-# Set BINARY=64 on x86_64 platforms
+# Set BINARY=64 on x86_64 platforms (but not AArch64 or powerpc64le)
 if [[ ${target} == x86_64-* ]]; then
     flags="${flags} BINARY=64"
 fi
@@ -39,8 +39,8 @@ else
     flags="${flags} NUM_THREADS=16"
 fi
 
-# On i686 and x86_64 architectures, engage DYNAMIC_ARCH
-if [[ ${target} == i686* ]] || [[ ${target} == x86_64* ]]; then
+# On Intel architectures, engage DYNAMIC_ARCH
+if [[ ${proc_family} == intel ]]; then
     flags="${flags} DYNAMIC_ARCH=1"
 # Otherwise, engage a specific target
 elif [[ ${target} == aarch64-* ]]; then
