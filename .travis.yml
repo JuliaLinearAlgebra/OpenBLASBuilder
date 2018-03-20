@@ -8,6 +8,7 @@ notifications:
 git:
   depth: 99999999
 cache:
+  timeout: 1000
   directories:
     - downloads
 env:
