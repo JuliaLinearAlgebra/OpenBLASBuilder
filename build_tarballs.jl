@@ -76,7 +76,7 @@ platforms = [
 
 # The products that we will ensure are always built
 products(prefix) = [
-    LibraryProduct(prefix, ["libopenblasp-r0", "libopenblas64_p-r0"])
+    LibraryProduct(prefix, ["libopenblasp-r0", "libopenblas64_p-r0"], :libopenblas)
 ]
 
 # Dependencies that must be installed before this package can be built
