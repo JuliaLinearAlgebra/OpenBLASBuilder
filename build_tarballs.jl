@@ -2,8 +2,8 @@ using BinaryBuilder
 
 # Collection of sources required to build OpenBLAS
 sources = [
-    "https://github.com/xianyi/OpenBLAS/archive/v0.2.20.tar.gz" =>
-    "5ef38b15d9c652985774869efd548b8e3e972e1e99475c673b25537ed7bcf394",
+    "https://github.com/xianyi/OpenBLAS/archive/v0.3.0.tar.gz" =>
+    "e5969ccfa5dbb022feeef52d35ec0ba052bddf8deddecb73112fcb31083813e4",
 ]
 
 # Bash recipe for building across all platforms
