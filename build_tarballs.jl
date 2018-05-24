@@ -3,7 +3,7 @@ using BinaryBuilder
 # Collection of sources required to build OpenBLAS
 sources = [
     "https://github.com/xianyi/OpenBLAS/archive/v0.3.0.tar.gz" =>
-    "e5969ccfa5dbb022feeef52d35ec0ba052bddf8deddecb73112fcb31083813e4",
+    "cf51543709abe364d8ecfb5c09a2b533d2b725ea1a66f203509b21a8e9d8f1a1",
 ]
 
 # Bash recipe for building across all platforms
