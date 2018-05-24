@@ -52,7 +52,7 @@ elif [[ ${target} == powerpc64le-* ]]; then
 fi
 
 # Enter the fun zone
-cd ${WORKSPACE}/srcdir/OpenBLAS-0.2.20/
+cd ${WORKSPACE}/srcdir/OpenBLAS-0.3.0/
 
 # Build the library
 make ${flags} -j${nproc}
