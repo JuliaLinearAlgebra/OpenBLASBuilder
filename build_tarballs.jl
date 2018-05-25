@@ -19,8 +19,12 @@ flags="${flags} OBJCONV=objconv"
 
 if [[ ${nbits} == 64 ]]; then
     # If we're building for a 64-bit platform, engage ILP64
-    flags="${flags} INTERFACE64=1 SYMBOLSUFFIX=64_ LIBPREFIX=libopenblas64_"
+    LIBPREFIX=libopenblas64_
+    flags="${flags} INTERFACE64=1 SYMBOLSUFFIX=64_"
+else
+    LIBPREFIX=libopenblas
 fi
+flags="${flags} LIBPREFIX=${LIBPREFIX}"
 
 # Set BINARY=32 on 32-bit platforms
 if [[ ${nbits} == 32 ]]; then
@@ -52,13 +56,39 @@ elif [[ ${target} == powerpc64le-* ]]; then
 fi
 
 # Enter the fun zone
-cd ${WORKSPACE}/srcdir/OpenBLAS-0.3.0/
+cd ${WORKSPACE}/srcdir/OpenBLAS-*/
 
 # Build the library
 make ${flags} -j${nproc}
 
 # Install the library
 make ${flags} PREFIX=$prefix install
+
+# Force the library to be named the same as in Julia-land.
+# Move things around, fix symlinks, and update install names/SONAMEs.
+ls -la ${prefix}/lib
+for f in ${prefix}/lib/libopenblas*p-r0*; do
+    name=${LIBPREFIX}.0.${f#*.}
+
+    # Move this file to a julia-compatible name
+    mv -v ${f} ${prefix}/lib/${name}
+
+    # If there were links that are now broken, fix 'em up
+    for l in $(find ${prefix}/lib -xtype l); do
+        if [[ $(basename $(readlink ${l})) == $(basename ${f}) ]]; then
+            ln -vsf ${name} ${l}
+        fi
+    done
+
+    # If this file was a .so or .dylib, set its SONAME/install name
+    if [[ ${f} == *.so.* ]] || [[ ${f} == *.dylib ]]; then 
+        if [[ ${target} == *linux* ]] || [[ ${target} == *freebsd* ]]; then
+            patchelf --set-soname ${name} ${prefix}/lib/${name}
+        elif [[ ${target} == *apple* ]]; then
+            install_name_tool -id ${name} ${prefix}/lib/${name}
+        fi
+    fi
+done
 """
 
 # These are the platforms we will build for by default, unless further
@@ -67,7 +97,7 @@ platforms = supported_platforms()
 
 # The products that we will ensure are always built
 products(prefix) = [
-    LibraryProduct(prefix, ["libopenblasp-r0", "libopenblas64_p-r0"], :libopenblas)
+    LibraryProduct(prefix, ["libopenblas", "libopenblas64_"], :libopenblas)
 ]
 
 # Dependencies that must be installed before this package can be built
