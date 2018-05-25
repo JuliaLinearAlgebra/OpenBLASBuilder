@@ -18,13 +18,18 @@ env:
   # Our build takes too long for one job, so split targets across multiple jobs
   matrix:
     - TARGET=x86_64-linux-gnu
-    - TARGET=i686-linux-gnu
     - TARGET=aarch64-linux-gnu
-    - TARGET=arm-linux-gnueabihf
-    - TARGET=powerpc64le-linux-gnu
     - TARGET=x86_64-apple-darwin14
-    - TARGET=x86_64-w64-mingw32
-    - TARGET=i686-w64-mingw32
+
+   # Windows times out, even with sharding.  Since we have to upload one, might as well upload
+   # them all, so to avoid wasting CI time, we just disable most of these, leaving only
+   # enough to make sure we aren't breaking something obvious when we push.
+
+   # - TARGET=i686-linux-gnu
+   # - TARGET=arm-linux-gnueabihf
+   # - TARGET=powerpc64le-linux-gnu
+   # - TARGET=x86_64-w64-mingw32
+   # - TARGET=i686-w64-mingw32
 sudo: required
 
 jobs:
