@@ -49,12 +49,11 @@ script:
 deploy:
   provider: releases
   api_key:
-    # Note; this api_key is only valid for staticfloat/OpenBLASBuilder; you need
+    # Note; this api_key is only valid for JuliaLinearAlgebra/OpenBLASBuilder; you need
     # to make your own: https://docs.travis-ci.com/user/deployment/releases/
-    secure: JMB4VWK1dp8PN07GCD2sIlrrbO4f4JtLIhu4x0eVnVhMc369M2BLfItNS3f40jabQjxtu2iqiiQwfUZ6LBy48xj1wdKc+EkXOOoYq1BKzemvjVqXIBS8/kF/Zot2eEYtCmrjg9Z4E0L8VdKmrV9j5BaJI9JaBQv2gLi02Q/KMItUDpinv5Tq0JfRG76ZoXs/F/8csecTUKxCOJM70KQXlR7dLDtAMkpH6Ul8oSc97G1vFCmH03UqTJJOVNfKnbx9dSDq+v98ZltRSu9fa0okbRqowS5MzyyPhNnMVjzuvhLVHV2+Bkocgfd2exVPnRTVohKV5o4+escMI5RPA5qZVnIOhbfRHCfR7OujTAlHZyr+aayR9ogDVyPQjNqCP9rWMvBxIa2oPSkAErpYIdseL6IBevB1bDsjfUCSNUzEvwmazBbQAb6LGOyHB1wcm9zePVSw+t4Mcx/fSo/CnIws7bHyuVxG1teUHxRSXETf/adhE9+XUlDC5zBlE3rI06Z3iOuw2IXvfHoDjqX3NyqYC4L0NaKtX8uYg3M3F6ley60+IGgTkUnmhW7NzPbNcMpnARu/skYA8PZwMfHIne9TZdOOcHH0qgpEE9070ww7/Bqx6u0MGBfOMC79F0nYHmQlnQsi+/PFVOAPvoE1zt5AhnmQPnWI/6wy7E8KgDZWi0Y=
-  file_glob: true
+    secure: U9rF0sj1U66aftXPMWw8Vk6af5P0rSxYGDXXXaxbhgBmj4rUTGr4BEV6nrokmFyXlytOXu7PQnhEkecFIFjVSUNMdpFzqfG3OuTnWw3q84+sitHqxl0NWYHrBTaN14rLaDQefmgqLs1HPSDZQJOlaFJH6dCp3xdScCdsPRMStHUidsIMX4KQN+Sbyx+3hZe+71d4VDf8XMNgeVhfiOc9e1piiyPzcMsHprMQ3kC+mONyS7Yv6b4a20xxCmIpA8JLDEOliMmCLyesJJmBVbx8OYYndNUuBzURRyf5XX6ls/1Ona+6VKuRRYAlTpQ4ziRUBVcPEreGeenu8Hy1qZKO+/ScRt/+oF+G5VjLX4EViFZK67b0cnc8/j+WmqP1XHsCUnIHAloW0u2QROMitlY1F251UkcxG2iXCpcldihPYADSOfIYPAJfiZob8LvkKtaReiHc8YAAdIBZV2KfeaK8VftG8bSZqBX/l8DZv/StIfZT5flvnB73BxH3dlaW6J1GR1hyx5pQEmyS+Xh1fl4tZWMjE1lVR8T8hhbIQUmL+n5glCEBXE86oWL0MBQ8Dr2Tq3tHQ0sYR/fIfqzOHpkHzaKv6vj9xcUAobZf4do67NwCKyPCXP+iNv01WJt4uGUBuXAUZaZR27HpAltE4+cuG8W22adru7zTAtVvopbb6rg=
   file: products/*
   skip_cleanup: true
   on:
-    repo: staticfloat/OpenBLASBuilder
     tags: true
+    repo: JuliaLinearAlgebra/OpenBLASBuilder
