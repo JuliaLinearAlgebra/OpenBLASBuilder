@@ -4,7 +4,7 @@ build:
         CI_REPO_OWNER: JuliaLinearAlgebra
         CI_REPO_NAME: OpenBLASBuilder
     script:
-        - julia --color=yes build_tarballs.jl --verbose
+        - julia --color=yes build_tarballs.jl
         # On tagged releases, upload our releases to github releases 
         - if [[ -n "${CI_COMMIT_TAG}" ]]; then
               ghr --username ${CI_REPO_OWNER} --repository ${CI_REPO_NAME} --replace ${CI_COMMIT_TAG} products/;
