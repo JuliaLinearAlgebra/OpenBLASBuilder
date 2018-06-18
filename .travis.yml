@@ -52,6 +52,7 @@ deploy:
     # Note; this api_key is only valid for JuliaLinearAlgebra/OpenBLASBuilder; you need
     # to make your own: https://docs.travis-ci.com/user/deployment/releases/
     secure: U9rF0sj1U66aftXPMWw8Vk6af5P0rSxYGDXXXaxbhgBmj4rUTGr4BEV6nrokmFyXlytOXu7PQnhEkecFIFjVSUNMdpFzqfG3OuTnWw3q84+sitHqxl0NWYHrBTaN14rLaDQefmgqLs1HPSDZQJOlaFJH6dCp3xdScCdsPRMStHUidsIMX4KQN+Sbyx+3hZe+71d4VDf8XMNgeVhfiOc9e1piiyPzcMsHprMQ3kC+mONyS7Yv6b4a20xxCmIpA8JLDEOliMmCLyesJJmBVbx8OYYndNUuBzURRyf5XX6ls/1Ona+6VKuRRYAlTpQ4ziRUBVcPEreGeenu8Hy1qZKO+/ScRt/+oF+G5VjLX4EViFZK67b0cnc8/j+WmqP1XHsCUnIHAloW0u2QROMitlY1F251UkcxG2iXCpcldihPYADSOfIYPAJfiZob8LvkKtaReiHc8YAAdIBZV2KfeaK8VftG8bSZqBX/l8DZv/StIfZT5flvnB73BxH3dlaW6J1GR1hyx5pQEmyS+Xh1fl4tZWMjE1lVR8T8hhbIQUmL+n5glCEBXE86oWL0MBQ8Dr2Tq3tHQ0sYR/fIfqzOHpkHzaKv6vj9xcUAobZf4do67NwCKyPCXP+iNv01WJt4uGUBuXAUZaZR27HpAltE4+cuG8W22adru7zTAtVvopbb6rg=
+  file_glob: true
   file: products/*
   skip_cleanup: true
   on:
