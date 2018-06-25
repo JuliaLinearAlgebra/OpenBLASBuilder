@@ -1,6 +1,8 @@
 using BinaryBuilder
 
 # Collection of sources required to build OpenBLAS
+name = "OpenBLAS"
+version = v"0.3.0"
 sources = [
     "https://github.com/xianyi/OpenBLAS/archive/v0.3.0.tar.gz" =>
     "cf51543709abe364d8ecfb5c09a2b533d2b725ea1a66f203509b21a8e9d8f1a1",
@@ -105,4 +107,4 @@ dependencies = [
 ]
 
 # Build the tarballs, and possibly a `build.jl` as well.
-build_tarballs(ARGS, "OpenBLAS", sources, script, platforms, products, dependencies)
+build_tarballs(ARGS, name, version, sources, script, platforms, products, dependencies)
